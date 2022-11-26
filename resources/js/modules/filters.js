@@ -13,8 +13,16 @@ export default {
             measurement: { text: 'Medida', value: 'measurement', active: false },
             dispatchable: { text: 'Despachable', value: 'dispatchable', active: false },
             minStock: { text: 'Inventario minimo', value: 'min_stock', active: false },
-            quantity: { text: 'Cantidad', value: 'quantity', active: false }
-        }
+            quantity: { text: 'Cantidad', value: 'quantity', active: false },
+            description: { text: 'Descripcion', value: 'description', active: false },
+            model: { text: 'Modelo', value: 'model', active: false },
+            serialNumber: { text: 'Numero de Serie', value: 'serial_number', active: false },
+            calibrationExpiration: { text: 'Vencimiento de Calibracion', value: 'calibration_expiration', active: false },
+            item: { text: 'Item', value: 'item', active: false },
+            user: { text: 'User', value: 'user.name', active: false },
+        },
+        historyMode: false,
+        historyItems: [],
     },
     mutations: {
         setFilters(state, { filters }) {
@@ -22,9 +30,21 @@ export default {
         },
         setItems(state, { items }) {
             state.items = items
+        },
+        setHistoryMode(state, { value }) {
+            state.historyMode = value
+        },
+        setHistoryItems(state, { items }) {
+            state.historyItems = items
         }
     },
     actions: {
+        setHistoryItems({ commit }, { items }) {
+            commit('setHistoryItems', { items })
+        },
+        setHistoryMode({ commit }, { value }) {
+            commit('setHistoryMode', { value })
+        },
         setFilters({ commit }, { filters }) {
             commit('setFilters', { filters })
         },
@@ -33,6 +53,12 @@ export default {
         }
     },
     getters: {
+        historyItems: state => {
+            return state.historyItems
+        },
+        historyMode: state => {
+            return state.historyMode
+        },
         activeFilters: state => {
             const activeFiltersKeys = Array.from(Object.keys(state.filters)).filter(key => state.filters[key].active)
             return activeFiltersKeys.map(key => state.filters[key])

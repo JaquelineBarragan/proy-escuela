@@ -28,10 +28,12 @@ export default {
     name: "activeFilters",
     data: () => ({
         active: false,
+        filtersBackup: null,
     }),
     methods: {
       async saveFilters() {
-          await this.$store.dispatch('filters/setFilters', { filters: this.filters })
+          this.filtersBackup = this.filters
+          await this.$store.dispatch('filters/setFilters', { filters: this.filtersBackup })
           this.active = false
       }
     },

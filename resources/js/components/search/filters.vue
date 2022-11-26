@@ -10,6 +10,9 @@
                     <v-col>
                         <v-btn color="success" text @click.prevent="search">Aplicar filtros <v-icon>mdi-download</v-icon></v-btn>
                     </v-col>
+                    <v-col>
+                        <v-btn color="cyan" text @click.prevent="history">Consultar Historial <v-icon>mdi-history</v-icon></v-btn>
+                    </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="4" v-if="filters.group.active"><v-select v-model="filter.group" label="Sub Grupo" :items="groups" item-text="name" return-object clearable></v-select></v-col>
@@ -35,6 +38,14 @@
                     </v-col>
                     <v-col cols="4" v-if="filters.minStock.active"><v-text-field v-model="filter.minStock" label="Inventario minimo" clearable></v-text-field></v-col>
                     <v-col cols="4" v-if="filters.quantity.active"><v-text-field v-model.number="filter.quantity" label="Cantidad" clearable></v-text-field></v-col>
+                    <v-col cols="4" v-if="filter.calibrationExpiration.active">
+                        <v-menu ref="datePickerMenu" v-model="menu" :close-on-content-click="false" offset-y min-width="auto">
+                            <template v-slot:activator="{on, attrs}">
+                                <v-text-field v-model="filter.calibrationExpiration" label="Vencimiento de calibracion" v-on="on" v-bind="attrs"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="filter.calibrationExpiration" label="Vencimiento de calibracion" no-title></v-date-picker>
+                        </v-menu>
+                    </v-col>
                 </v-row>
             </v-expansion-panel-content>
         </v-expansion-panel>
@@ -53,6 +64,7 @@ export default {
         groups: [{id: 0, name: 'TODOS'}],
         brands: [{id: 0, name: 'TODOS'}],
         families: [{id: 0, name: 'TODOS'}],
+        menu: false,
         filter: {
             group: null,
             brand: null,
@@ -65,11 +77,38 @@ export default {
             dispatchable: false,
             minStock: 0,
             quantity: 0,
+            calibrationExpiration: null,
         },
+        historyHeaders: [
+            {text: 'Item', value: 'tool.item'},
+            {text: 'Familia', value: 'family.name'},
+            {text: 'Fecha', value: 'created_at'},
+            {text: 'Ejecutor', value: 'user.email'},
+            {text: 'Actividad', value: 'comment'},
+            {text: 'Informacion Actual', value: 'after'},
+            {text: 'Informacion Anterior', value: 'before'}
+        ]
     }),
     methods: {
+        async history() {
+            await this.$store.dispatch('filters/setHistoryMode', { value: true })
+            this.$emit('loading', true)
+            const response = await axios.get('/api/history', getToken())
+            if (response.status === 200) {
+                const items = response.data.map(item => {
+                    return {
+                        ...item,
+                        before: JSON.parse(item.before),
+                        after: JSON.parse(item.after)
+                    }
+                })
+                await this.$store.dispatch('filters/setHistoryItems', { items })
+            }
+            this.$emit('loading', false)
+        },
         async search() {
             this.$emit('loading', true)
+            await this.$store.dispatch('filters/setHistoryMode', { value: false })
             const query = {}
             const activeFilters = Object.keys(this.filters).filter(filter => this.filters[filter].active)
             for (let key of activeFilters) {

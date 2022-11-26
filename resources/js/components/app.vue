@@ -9,8 +9,8 @@
             </v-list-item>
             <v-divider></v-divider>
             <v-list dense nav>
-                <v-list-item-subtitle>Administracion</v-list-item-subtitle>
-                <v-list-item link @click.prevent="goToRoute('users.index')" :disabled="!verifyAccess([1])">
+                <v-list-item-subtitle v-if="verifyAccess([1])">Administracion</v-list-item-subtitle>
+                <v-list-item link @click.prevent="goToRoute('users.index')" v-if="verifyAccess([1])">
                     <v-list-item-icon>
                         <v-icon>mdi-account-multiple</v-icon>
                     </v-list-item-icon>
@@ -18,14 +18,21 @@
                         <v-list-item-title>Usuarios</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                <v-divider></v-divider>
+                <v-divider v-if="verifyAccess([1])"></v-divider>
                 <v-list-item-subtitle>Base de datos</v-list-item-subtitle>
-                <v-list-item v-for="(menu, i) in menus" :key="i" link @click="goToRoute(menu.routeName)" :disabled="!verifyAccess(menu.requiredRoles)">
+                <v-list-item v-for="(menu, i) in menus" :key="i" link @click="goToRoute(menu.routeName)" v-if="verifyAccess(menu.requiredRoles)">
                     <v-list-item-icon>
                         <v-icon>{{ menu.icon }}</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
                         <v-list-item-title>{{ menu.name }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-list-item @click.prevent="closeSession" link>
+                    <v-list-item-icon><v-icon>mdi-exit-to-app</v-icon></v-list-item-icon>
+                    <v-list-item-content>
+                        <v-list-item-title>Cerrar Sesion</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
@@ -40,7 +47,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { validateToken, verifyAccess } from "../lib/auth";
+import { validateToken, verifyAccess, getToken } from "../lib/auth";
 
 export default {
     name: "app",
@@ -50,11 +57,17 @@ export default {
             { name: 'Eliminar', icon: 'mdi-minus', routeName: 'tools.destroy', requiredRoles: [1,2] },
             { name: 'Editar', icon: 'mdi-pencil', routeName: 'tools.edit', requiredRoles: [1,2] },
             { name: 'Consultar', icon: 'mdi-magnify', routeName: 'search.index', requiredRoles: [] },
-            { name: 'Historial', icon: 'mdi-history', routeName: 'tools.history', requiredRoles: [1,2] }
+            // { name: 'Historial', icon: 'mdi-history', routeName: 'tools.history', requiredRoles: [1,2] }
         ]
     }),
     methods: {
         ...mapActions('user', ['set_user']),
+        async closeSession() {
+            const response = await axios.post('/api/logout', getToken())
+            if (response.status === 200) {
+                window.location.href = '/login'
+            }
+        },
         verifyAccess(roles) {
             return verifyAccess(roles)
         },

@@ -2,7 +2,7 @@
     <v-data-table :items="data" :headers="headers" disable-sort :loading="loading" :items-per-page="5">
         <template #item.created_at="{item}">{{ new Date(item.created_at).toLocaleDateString("es-MX") }}</template>
         <template #item.after="{item}">
-            <span v-for="(key, i) of Object.keys(item.after)" :key="i">
+            <span v-if="item.after !== null" v-for="(key, i) of Object.keys(item.after)" :key="i">
                 {{ key }} -> {{ item.after[key] }} <br>
             </span>
         </template>

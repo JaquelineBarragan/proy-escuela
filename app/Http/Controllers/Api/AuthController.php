@@ -23,6 +23,14 @@ class AuthController extends Controller
         return response()->json('Datos Incorrectos', 401);
     }
 
+    public function logout(Request $request): JsonResponse
+    {
+        if($request->user()->tokens()->delete()){
+            return response()->json('Sesion cerrada');
+        }
+        return response()->json('Error al cerrar sesion');
+    }
+
     public function verify(Request $request): JsonResponse {
         $user = User::with('role')->find($request->user()->id);
         return response()->json($user);
