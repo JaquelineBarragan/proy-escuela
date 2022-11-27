@@ -38,7 +38,12 @@
                     </v-col>
                     <v-col cols="4" v-if="filters.minStock.active"><v-text-field v-model="filter.minStock" label="Inventario minimo" clearable></v-text-field></v-col>
                     <v-col cols="4" v-if="filters.quantity.active"><v-text-field v-model.number="filter.quantity" label="Cantidad" clearable></v-text-field></v-col>
-                    <v-col cols="4" v-if="filter.calibrationExpiration.active">
+                    <v-col cols="4" v-if="filters.description.active"><v-text-field v-model="filter.description" label="Descripcion" clearable></v-text-field></v-col>
+                    <v-col cols="4" v-if="filters.model.active"><v-text-field v-model="filter.model" label="Modelo" clearable></v-text-field></v-col>
+                    <v-col cols="4" v-if="filters.serialNumber.active"><v-text-field v-model="filter.serialNumber" label="Serie" clearable></v-text-field></v-col>
+                    <v-col cols="4" v-if="filters.item.active"><v-text-field v-model="filter.item" label="Item" clearable></v-text-field></v-col>
+                    <v-col cols="4" v-if="filters.user.active"><v-select v-model="filter.user" label="Usuario" :items="users" item-text="email" return-object clearable></v-select></v-col>
+                    <v-col cols="4" v-if="filters.calibrationExpiration.active">
                         <v-menu ref="datePickerMenu" v-model="menu" :close-on-content-click="false" offset-y min-width="auto">
                             <template v-slot:activator="{on, attrs}">
                                 <v-text-field v-model="filter.calibrationExpiration" label="Vencimiento de calibracion" v-on="on" v-bind="attrs"></v-text-field>
@@ -64,6 +69,7 @@ export default {
         groups: [{id: 0, name: 'TODOS'}],
         brands: [{id: 0, name: 'TODOS'}],
         families: [{id: 0, name: 'TODOS'}],
+        users: [{id: 0, email: 'TODOS'}],
         menu: false,
         filter: {
             group: null,
@@ -77,6 +83,11 @@ export default {
             dispatchable: false,
             minStock: 0,
             quantity: 0,
+            description: null,
+            model: null,
+            serialNumber: null,
+            item: null,
+            user: null,
             calibrationExpiration: null,
         },
         historyHeaders: [
@@ -140,6 +151,10 @@ export default {
                 this.families = this.families.concat(response.data)
                 this.filter.family = this.families[0]
             })
+        axios.get('/api/users', getToken())
+          .then(response => {
+              this.users = this.users.concat(response.data)
+          })
     },
     components: {
         activeFilters

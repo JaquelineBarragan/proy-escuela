@@ -234,7 +234,7 @@ class ToolController extends Controller
     }
 
     public function search(Request $request) {
-        $especialKeys = ['group','brand','family'];
+        $especialKeys = ['group','brand','family','user'];
         $filters = $request->keys();
         $query = Tool::query();
         foreach($filters as $filter) {

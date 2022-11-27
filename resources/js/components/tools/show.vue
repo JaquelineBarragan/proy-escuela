@@ -1,94 +1,105 @@
 <template>
-    <v-dialog v-model="show" v-if="tool !== null" scrollable>
-        <v-card>
-            <v-card-title>Herramienta {{ tool.item }}</v-card-title>
-            <v-divider></v-divider>
-            <v-card-text>
-                <v-form v-model="valid">
-                    <v-row>
-                        <v-col cols="4">
-                            <v-textarea label="Descripcion" v-model="tool.description" :rows="1" :rules="[rules.required]"></v-textarea>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-combobox label="Subgrupo" v-model="tool.group" item-text="name" :items="groups" clearable item-value="name"></v-combobox>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-combobox label="Familia" v-model="tool.family" item-text="name" :items="families" :rules="[rules.required]" clearable item-value="name"></v-combobox>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="4">
-                            <v-combobox label="Marca" v-model="tool.brand" item-text="name" :items="brands" item-value="name"></v-combobox>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-text-field label="Modelo" v-model="tool.model"></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-text-field label="# Serie" v-model="tool.serial"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="4">
-                            <p>Sujeto a validacion</p>
-                            <v-radio-group v-model="tool.has_validation" row>
-                                <v-radio label="Si" :value="true"></v-radio>
-                                <v-radio label="No" :value="false"></v-radio>
-                            </v-radio-group>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-menu ref="datePickerMenu" v-model="menu" :close-on-content-click="false" offset-y min-width="auto">
-                                <template v-slot:activator="{on, attrs}">
-                                    <v-text-field v-model="tool.calibration_expiration" label="Vencimiento de calibracion" v-on="on" v-bind="attrs" :disabled="!tool.has_validation"></v-text-field>
-                                </template>
-                                <v-date-picker v-model="tool.calibration_expiration" label="Vencimiento de calibracion" no-title></v-date-picker>
-                            </v-menu>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-text-field label="Localizacion principal" v-model="tool.main_localization" :rules="[rules.required]"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="4">
-                            <v-text-field label="Localizacion de estante" v-model="tool.shelf_localization"></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-text-field label="# de estante" v-model="tool.shelf"></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                            <p>Despachable</p>
-                            <v-radio-group row>
-                                <v-radio label="Si" :value="true"></v-radio>
-                                <v-radio label="No" :value="false"></v-radio>
-                            </v-radio-group>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="4">
-                            <v-text-field label="Cantidad" v-model.number="tool.quantity" :rules="[rules.required, v => v > 0 || 'Cantidad invalida']"></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-text-field label="Unidad de medida" v-model="tool.measurement" :rules="[rules.required]"></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-text-field label="Inventario minimo" v-model="tool.min_stock"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-textarea label="Comentarios" v-model="tool.comments" :rows="1"></v-textarea>
-                        </v-col>
-                        <v-col cols="6">
-                            <file-pond name="documents" ref="documents" label-idle="Archivos" accepted-file-types="application/pdf" :disabled="true"></file-pond>
-                        </v-col>
-                    </v-row>
-                </v-form>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-                <v-btn text color="success" @click="update" :disabled="disabled">Guardar</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+    <div>
+        <v-dialog v-model="active">
+            <v-card>
+                <v-card-title>Esta usted seguro?</v-card-title>
+                <v-card-actions>
+                    <v-btn color="success" text @click.prevent="update">Guardar</v-btn>
+                    <v-btn color="error" text @click="active = false">Cancelar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="show" v-if="tool !== null" scrollable>
+            <v-card>
+                <v-card-title>Herramienta {{ tool.item }}</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                    <v-form v-model="valid">
+                        <v-row>
+                            <v-col cols="4">
+                                <v-textarea label="Descripcion" v-model="tool.description" :rows="1" :rules="[rules.required]"></v-textarea>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-combobox label="Subgrupo" v-model="tool.group" item-text="name" :items="groups" clearable item-value="name"></v-combobox>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-combobox label="Familia" v-model="tool.family" item-text="name" :items="families" :rules="[rules.required]" clearable item-value="name"></v-combobox>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="4">
+                                <v-combobox label="Marca" v-model="tool.brand" item-text="name" :items="brands" item-value="name"></v-combobox>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field label="Modelo" v-model="tool.model"></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field label="# Serie" v-model="tool.serial"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="4">
+                                <p>Sujeto a validacion</p>
+                                <v-radio-group v-model="tool.has_validation" row>
+                                    <v-radio label="Si" :value="true"></v-radio>
+                                    <v-radio label="No" :value="false"></v-radio>
+                                </v-radio-group>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-menu ref="datePickerMenu" v-model="menu" :close-on-content-click="false" offset-y min-width="auto">
+                                    <template v-slot:activator="{on, attrs}">
+                                        <v-text-field v-model="tool.calibration_expiration" label="Vencimiento de calibracion" v-on="on" v-bind="attrs" :disabled="!tool.has_validation"></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="tool.calibration_expiration" label="Vencimiento de calibracion" no-title></v-date-picker>
+                                </v-menu>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field label="Localizacion principal" v-model="tool.main_localization" :rules="[rules.required]"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="4">
+                                <v-text-field label="Localizacion de estante" v-model="tool.shelf_localization"></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field label="# de estante" v-model="tool.shelf"></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <p>Despachable</p>
+                                <v-radio-group row>
+                                    <v-radio label="Si" :value="true"></v-radio>
+                                    <v-radio label="No" :value="false"></v-radio>
+                                </v-radio-group>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="4">
+                                <v-text-field label="Cantidad" v-model.number="tool.quantity" :rules="[rules.required, v => v > 0 || 'Cantidad invalida']"></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field label="Unidad de medida" v-model="tool.measurement" :rules="[rules.required]"></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field label="Inventario minimo" v-model="tool.min_stock"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-textarea label="Comentarios" v-model="tool.comments" :rows="1"></v-textarea>
+                            </v-col>
+                            <v-col cols="6">
+                                <file-pond name="documents" ref="documents" label-idle="Archivos" accepted-file-types="application/pdf" :disabled="true"></file-pond>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-btn text color="success" @click="active = true" :disabled="disabled">Guardar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </div>
 </template>
 
 <script>
@@ -102,6 +113,7 @@ const FilePond = vueFilePond(FilePondPluginFileValidateType);
 export default {
     name: "show",
     data: () => ({
+        active: false,
         loading: false,
         valid: false,
         show: false,
@@ -114,6 +126,7 @@ export default {
     }),
     methods: {
         async update() {
+            this.active = false
             const response = await axios.put(`/api/tools/${this.tool.id}`, this.tool, getToken())
             if (response.status === 200) {
                 const newItem = {

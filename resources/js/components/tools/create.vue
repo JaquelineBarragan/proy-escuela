@@ -1,7 +1,16 @@
 <template>
     <div>
+        <v-dialog v-model="active">
+            <v-card>
+                <v-card-title>Esta usted seguro?</v-card-title>
+                <v-card-actions>
+                    <v-btn color="success" text @click.prevent="createTool">Guardar</v-btn>
+                    <v-btn color="error" text @click="active = false">Cancelar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <v-snackbar v-model="snackbar.active" :color="snackbar.color" :timeout="1500" > {{ snackbar.message }}</v-snackbar>
-        <v-btn @click="createTool" :disabled="disabled" :loading="loading">Guardar</v-btn>
+        <v-btn @click="active = true" :disabled="disabled" :loading="loading">Guardar</v-btn>
         <v-form v-model="valid">
             <div class="form-container">
                 <div class="form-column">
@@ -9,13 +18,16 @@
                         <v-textarea v-model="tool.description" label="Descripcion" rows="1" :rules="[rules.required]"></v-textarea>
                     </div>
                     <div class="form-row">
-                        <v-combobox v-model.trim="tool.group" label="Sub Grupo" :items="groups" item-text="name" clearable item-value="name"></v-combobox>
+                        <v-combobox v-if="verifyAccess([1])" v-model.trim="tool.group" label="Sub Grupo" :items="groups" item-text="name" clearable item-value="name"></v-combobox>
+                        <v-select v-else v-model.trim="tool.group" label="Sub Grupo" :items="groups" item-text="name" clearable item-value="name"></v-select>
                     </div>
                     <div class="form-row">
-                        <v-combobox v-model.trim="tool.family" label="Familia" :items="families" item-text="name" :rules="[rules.required]" clearable item-value="name"></v-combobox>
+                        <v-combobox v-if="verifyAccess([1])" v-model.trim="tool.family" label="Familia" :items="families" item-text="name" :rules="[rules.required]" clearable item-value="name"></v-combobox>
+                        <v-select v-else v-model.trim="tool.family" label="Familia" :items="families" item-text="name" :rules="[rules.required]" clearable item-value="name"></v-select>
                     </div>
                     <div class="form-row">
-                        <v-combobox v-model.trim="tool.brand" label="Marca" :items="brands" item-text="name" :rules="[rules.required]" clearable item-value="name"></v-combobox>
+                        <v-combobox v-if="verifyAccess([1])" v-model.trim="tool.brand" label="Marca" :items="brands" item-text="name" :rules="[rules.required]" clearable item-value="name"></v-combobox>
+                        <v-select v-else v-model.trim="tool.brand" label="Marca" :items="brands" item-text="name" :rules="[rules.required]" clearable item-value="name"></v-select>
                     </div>
                 </div>
                 <div class="form-column">
@@ -80,7 +92,7 @@
 </template>
 
 <script>
-import { getToken } from "../../lib/auth";
+import { getToken, verifyAccess } from "../../lib/auth";
 import { required } from "../../lib/rules";
 import vueFilePond, { setOptions } from "vue-filepond";
 import "filepond/dist/filepond.min.css"
@@ -91,6 +103,7 @@ export default {
     name: "create",
     data: () => ({
         snackbar: { active: false, message: null, color: 'success' },
+        active: false,
         loading: true,
         menu: false,
         valid: false,
@@ -118,13 +131,17 @@ export default {
         }
     }),
     methods: {
+        verifyAccess(roles) {
+            return verifyAccess(roles)
+        },
         async onProcessFile(error, file) {
             if (error === null) {
                 this.tool.documents.push(file.serverId)
             }
         },
         async createTool() {
-            // this.loading = true
+            this.active = false
+            this.loading = true
             const response = await axios.post('/api/tools', this.tool, getToken())
             if (response.status === 200) {
                 this.snackbar = {

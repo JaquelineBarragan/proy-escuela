@@ -19,7 +19,7 @@ export default {
             serialNumber: { text: 'Numero de Serie', value: 'serial_number', active: false },
             calibrationExpiration: { text: 'Vencimiento de Calibracion', value: 'calibration_expiration', active: false },
             item: { text: 'Item', value: 'item', active: false },
-            user: { text: 'User', value: 'user.name', active: false },
+            user: { text: 'Usuario', value: 'user.name', active: false },
         },
         historyMode: false,
         historyItems: [],
