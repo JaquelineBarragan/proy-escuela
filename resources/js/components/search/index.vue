@@ -1,12 +1,14 @@
 <template>
     <div>
         <filters @loading="setLoading"/>
+        <export-pdf ref="exportPdf" />
         <v-data-table v-if="!historyMode" :headers="activeFilters" :loading="loading" :items="filterableItems">
             <template #top>
                 <v-toolbar flat>
                     <v-toolbar-title>Herramientas</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
+                    <v-btn icon @click="exportPdf"><v-icon>mdi-file-pdf-box</v-icon></v-btn>
                     <v-text-field v-model="search" label="Buscar" hide-details></v-text-field>
                 </v-toolbar>
             </template>
@@ -29,8 +31,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-
+import exportPdf from "./exportPdf";
 import filters from "./filters";
+
 export default {
     name: "index",
     data: () => ({
@@ -48,6 +51,9 @@ export default {
         ]
     }),
     methods: {
+        exportPdf() {
+          this.$refs.exportPdf.makePdf(this.activeFilters, this.filterableItems)
+        },
         setLoading(data){
             this.loading = data
         }
@@ -69,7 +75,8 @@ export default {
         }
     },
     components: {
-        filters
+        filters,
+        exportPdf
     }
 }
 </script>
