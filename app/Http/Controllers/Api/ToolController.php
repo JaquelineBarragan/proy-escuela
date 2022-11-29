@@ -116,7 +116,8 @@ class ToolController extends Controller
             $brand = $this->getBrand($request->brand);
             $oldTool = json_encode($this->getValues($tool->toArray(), $tool));
             if ($request->main_localization !== $tool->main_localization) {
-                $tool->update([ 'quantity' => $tool->quantity - $request->quantity ]);
+                $tool->update([ 'quantity' => $tool->quantity - $request->movingQuantity ]);
+                $request->quantity = $request->movingQuantity;
                 $tool = $this->createTool($request);
                 $request->user()->logs()->create([
                     'tool_id' => $tool->id,

@@ -8,7 +8,8 @@
                     <v-toolbar-title>Herramientas</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="exportPdf"><v-icon>mdi-file-pdf-box</v-icon></v-btn>
+                    <v-btn icon @click="exportExcel" color="success" :disabled="filterableItems.length === 0"><v-icon>mdi-file-excel-box</v-icon></v-btn>
+                    <v-btn icon @click="exportPdf" color="error" :disabled="filterableItems.length === 0"><v-icon>mdi-file-pdf-box</v-icon></v-btn>
                     <v-text-field v-model="search" label="Buscar" hide-details></v-text-field>
                 </v-toolbar>
             </template>
@@ -51,6 +52,9 @@ export default {
         ]
     }),
     methods: {
+        exportExcel() {
+
+        },
         exportPdf() {
           this.$refs.exportPdf.makePdf(this.activeFilters, this.filterableItems)
         },

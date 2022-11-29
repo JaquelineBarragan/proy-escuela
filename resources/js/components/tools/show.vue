@@ -17,30 +17,30 @@
                     <v-form v-model="valid">
                         <v-row>
                             <v-col cols="4">
-                                <v-textarea label="Descripcion" v-model="tool.description" :rows="1" :rules="[rules.required]"></v-textarea>
+                                <v-textarea label="Descripcion" v-model="tool.description" :rows="1" :rules="[rules.required]" disabled></v-textarea>
                             </v-col>
                             <v-col cols="4">
                                 <v-combobox label="Subgrupo" v-model="tool.group" item-text="name" :items="groups" clearable item-value="name"></v-combobox>
                             </v-col>
                             <v-col cols="4">
-                                <v-combobox label="Familia" v-model="tool.family" item-text="name" :items="families" :rules="[rules.required]" clearable item-value="name"></v-combobox>
+                                <v-combobox label="Familia" v-model="tool.family" item-text="name" :items="families" :rules="[rules.required]" clearable item-value="name" disabled></v-combobox>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="4">
-                                <v-combobox label="Marca" v-model="tool.brand" item-text="name" :items="brands" item-value="name"></v-combobox>
+                                <v-combobox label="Marca" v-model="tool.brand" item-text="name" :items="brands" item-value="name" disabled></v-combobox>
                             </v-col>
                             <v-col cols="4">
                                 <v-text-field label="Modelo" v-model="tool.model"></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field label="# Serie" v-model="tool.serial"></v-text-field>
+                                <v-text-field label="# Serie" v-model="tool.serial" disabled></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="4">
                                 <p>Sujeto a validacion</p>
-                                <v-radio-group v-model="tool.has_validation" row>
+                                <v-radio-group v-model="tool.has_validation" row disabled>
                                     <v-radio label="Si" :value="true"></v-radio>
                                     <v-radio label="No" :value="false"></v-radio>
                                 </v-radio-group>
@@ -77,17 +77,20 @@
                                 <v-text-field label="Cantidad" v-model.number="tool.quantity" :rules="[rules.required, v => v > 0 || 'Cantidad invalida']"></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field label="Unidad de medida" v-model="tool.measurement" :rules="[rules.required]"></v-text-field>
+                                <v-text-field label="Unidad de medida" v-model="tool.measurement" :rules="[rules.required]" disabled></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field label="Inventario minimo" v-model="tool.min_stock"></v-text-field>
+                                <v-text-field label="Inventario minimo" v-model="tool.min_stock" disabled></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="6">
+                            <v-col cols="4">
+                                <v-text-field label="Cantidad a mover" v-model.number="movingQuantity" type="number"></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
                                 <v-textarea label="Comentarios" v-model="tool.comments" :rows="1"></v-textarea>
                             </v-col>
-                            <v-col cols="6">
+                            <v-col cols="4">
                                 <file-pond name="documents" ref="documents" label-idle="Archivos" accepted-file-types="application/pdf" :disabled="true"></file-pond>
                             </v-col>
                         </v-row>
@@ -118,6 +121,7 @@ export default {
         valid: false,
         show: false,
         tool: null,
+        movingQuantity: 0,
         menu: false,
         rules : { required: required },
         groups: [],
@@ -127,6 +131,7 @@ export default {
     methods: {
         async update() {
             this.active = false
+            this.tool = { ...this.tool, movingQuantity: this.movingQuantity }
             const response = await axios.put(`/api/tools/${this.tool.id}`, this.tool, getToken())
             if (response.status === 200) {
                 const newItem = {
@@ -144,6 +149,7 @@ export default {
                 }
                 this.$emit('updated', newItem)
                 this.show = false
+                this.movingQuantity = 0
             }
 
         },

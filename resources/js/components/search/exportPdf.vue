@@ -4,7 +4,7 @@
       :float-layout="true"
       :enable-download="true"
       :paginate-elements-by-height="1400"
-      filename="prueba"
+      filename="consulta"
       :pdf-quality="2"
       :manual-pagination="false"
       pdf-format="a4"
