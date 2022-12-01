@@ -60,6 +60,7 @@ class ToolController extends Controller
             'min_stock' => $tool->min_stock,
             'quantity' => $tool->quantity,
             'dispatchable' => $tool->dispatchable,
+            'comments' => $tool->comments,
             'files' => $tool->files->map(static function(File $file) {
                 return $file->path;
             })
