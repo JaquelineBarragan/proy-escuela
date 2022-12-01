@@ -66,7 +66,7 @@
                             </v-col>
                             <v-col cols="4">
                                 <p>Despachable</p>
-                                <v-radio-group row>
+                                <v-radio-group row v-model="tool.dispatchable">
                                     <v-radio label="Si" :value="true"></v-radio>
                                     <v-radio label="No" :value="false"></v-radio>
                                 </v-radio-group>
@@ -98,7 +98,7 @@
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                    <v-btn text color="success" @click="active = true" :disabled="disabled">Guardar</v-btn>
+                    <v-btn text color="success" @click="active = true">Guardar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

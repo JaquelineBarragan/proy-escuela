@@ -59,6 +59,7 @@ class ToolController extends Controller
             'user' => $tool->user,
             'min_stock' => $tool->min_stock,
             'quantity' => $tool->quantity,
+            'dispatchable' => $tool->dispatchable,
             'files' => $tool->files->map(static function(File $file) {
                 return $file->path;
             })
@@ -143,7 +144,8 @@ class ToolController extends Controller
                     'measurement' => $request->measurement,
                     'min_stock' => $request->min_stock,
                     'quantity' => $request->quantity,
-                    'comments' => $request->comments
+                    'comments' => $request->comments,
+                    'dispatchable' => $request->dispatchable
                 ]);
                 $oldValues = $tool->getChanges();
                 if (count($oldValues) > 0) {
@@ -186,7 +188,8 @@ class ToolController extends Controller
             'measurement' => $request->measurement,
             'min_stock' => $request->min_stock,
             'quantity' => $request->quantity,
-            'comments' => $request->comments
+            'comments' => $request->comments,
+            'dispatchable' => $request->dispatchable
         ]);
         $tool->update([
             'item' => sprintf('AAA%04d', $tool->id)
@@ -246,7 +249,7 @@ class ToolController extends Controller
                 }
             }
             else if (!in_array($filter, $especialKeys, true)){
-                $query = $query->where(Str::snake($filter), $request[$filter]);
+                $query = $query->where(Str::snake($filter), 'like', "%$request[$filter]%");
             }
         }
         $data = $query->get()->map(function(Tool $tool) {

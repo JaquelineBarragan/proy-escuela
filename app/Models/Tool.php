@@ -15,7 +15,8 @@ class Tool extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $casts = [
-        'has_validation' => 'boolean'
+        'has_validation' => 'boolean',
+        'dispatchable' => 'boolean'
     ];
 
     public function brand(): BelongsTo {
