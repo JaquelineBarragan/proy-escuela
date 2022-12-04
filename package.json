@@ -27,10 +27,12 @@
     "dependencies": {
         "filepond": "^4.27.1",
         "filepond-plugin-file-validate-type": "^1.2.6",
+        "js-xlsx": "^0.8.22",
         "vue-filepond": "^6.0.3",
         "vue-html2pdf": "^1.8.0",
         "vue-router": "^3.6.5",
         "vuetify": "^2.6.11",
-        "vuex": "^3.6.2"
+        "vuex": "^3.6.2",
+        "xlsx": "^0.18.5"
     }
 }

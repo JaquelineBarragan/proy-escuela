@@ -123,7 +123,9 @@ export default {
             const query = {}
             const activeFilters = Object.keys(this.filters).filter(filter => this.filters[filter].active)
             for (let key of activeFilters) {
-                query[key] = this.filter[key]
+                if (!_.isEmpty(this.filter[key])) {
+                    query[key] = this.filter[key]
+                }
             }
             const response = await axios.post('/api/search', query, getToken())
             if (response.status === 200) {

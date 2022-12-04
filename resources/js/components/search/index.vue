@@ -34,6 +34,7 @@
 import { mapGetters } from "vuex";
 import exportPdf from "./exportPdf";
 import filters from "./filters";
+const XLSX = require("xlsx");
 
 export default {
     name: "index",
@@ -41,6 +42,7 @@ export default {
         loading: false,
         search: null,
         headers: [],
+        specialKeys: ['group','family','brand'],
         historyHeaders: [
             {text: 'Item', value: 'tool.item'},
             {text: 'Familia', value: 'family.name'},
@@ -53,7 +55,22 @@ export default {
     }),
     methods: {
         exportExcel() {
-
+            let workbook = XLSX.utils.book_new()
+            const data = []
+            for (let item of this.filterableItems) {
+                const newItem = {}
+                for (let filter of this.activeFilters) {
+                    if (this.specialKeys.find(item => item === filter.key) !== undefined) {
+                        newItem[filter.text] = item[filter.key] === null ? '' : item[filter.key].name
+                    } else {
+                        newItem[filter.text] = item[filter.value]
+                    }
+                }
+                data.push(newItem)
+            }
+            const worksheet = XLSX.utils.json_to_sheet(data)
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Hoja 1')
+            XLSX.writeFileXLSX(workbook, 'Busqueda.xslx')
         },
         exportPdf() {
           this.$refs.exportPdf.makePdf(this.activeFilters, this.filterableItems)
@@ -84,7 +101,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-</style>
