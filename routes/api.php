@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(static function() {
     Route::delete('/uploads', [UploadController::class, 'destroy']);
     Route::post('/search', [ToolController::class, 'search']);
     Route::get('/history', [ToolController::class, 'history']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::delete('/logout', [AuthController::class, 'logout']);
     Route::apiResources([
         'users' => UserController::class,
         'tools' => ToolController::class,

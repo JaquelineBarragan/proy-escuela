@@ -63,7 +63,7 @@ export default {
     methods: {
         ...mapActions('user', ['set_user']),
         async closeSession() {
-            const response = await axios.post('/api/logout', getToken())
+            const response = await axios.delete('/api/logout', getToken())
             if (response.status === 200) {
                 window.location.href = '/login'
             }
